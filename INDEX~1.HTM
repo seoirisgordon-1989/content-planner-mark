@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Контент-план · Марк Гордон</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#0B0D3B;--fuchsia:#C13BAA;--pink:#FF6BAA;--purple:#5B2F90;
+  --light:#F6F7FB;--ink:#1a1c2e;--muted:#6b6f86;--line:#e7e8f0;
+  --grad:linear-gradient(110deg,var(--pink),var(--purple));
+  --green:#0f7a5a;--green-bg:#e6f7f0;
+  --pink-bg:#fdeaf5;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--light);font-size:14px;}
+.wrap{max-width:1200px;margin:0 auto;padding:0 16px 80px;}
+
+/* HERO */
+.hero{background:var(--navy);color:#fff;border-radius:0 0 24px 24px;padding:28px 24px 22px;margin:0 -16px 20px;position:relative;overflow:hidden;}
+.hero::after{content:"";position:absolute;right:-60px;top:-60px;width:220px;height:220px;border-radius:50%;background:var(--grad);opacity:.35;filter:blur(10px);}
+.brandtag{display:inline-block;font-family:'Manrope';font-weight:700;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;background:var(--grad);padding:4px 12px;border-radius:20px;margin-bottom:10px;position:relative;z-index:1}
+.hero h1{font-family:'Manrope';font-weight:800;font-size:22px;margin:0 0 4px;position:relative;z-index:1}
+.hero p{margin:0;color:#b9bce0;font-size:13px;max-width:560px;position:relative;z-index:1;line-height:1.5}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px;position:relative;z-index:1}
+.stat{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:10px 12px}
+.stat .n{font-family:'Manrope';font-weight:800;font-size:20px;line-height:1}
+.stat .l{font-size:11px;color:#b9bce0;margin-top:2px}
+.progressbar{height:6px;background:rgba(255,255,255,.12);border-radius:20px;overflow:hidden;margin-top:12px;position:relative;z-index:1}
+.progressbar>div{height:100%;background:var(--grad);border-radius:20px;transition:width .4s}
+
+/* TABS */
+.tabs{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap}
+.tab{font-family:'Manrope';font-weight:600;font-size:13px;border:1px solid var(--line);background:#fff;color:var(--muted);padding:8px 16px;border-radius:10px;cursor:pointer;transition:.15s}
+.tab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+.hidden{display:none!important}
+
+/* CONTROLS */
+.controls-row{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+.search{border:1px solid var(--line);border-radius:10px;padding:9px 13px;font-size:13px;font-family:'Inter';background:#fff;outline:none;flex:1;min-width:180px}
+.search:focus{border-color:var(--purple)}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.chip{font-size:12px;font-weight:500;border:1px solid var(--line);background:#fff;color:var(--muted);padding:6px 12px;border-radius:20px;cursor:pointer;transition:.15s}
+.chip.active{background:var(--grad);color:#fff;border-color:transparent}
+.view-toggle{display:flex;gap:4px}
+.vtbtn{font-size:12px;font-weight:600;border:1px solid var(--line);background:#fff;color:var(--muted);padding:7px 12px;border-radius:8px;cursor:pointer;font-family:'Manrope'}
+.vtbtn.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* CARDS VIEW */
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden;transition:.15s}
+.card:hover{box-shadow:0 4px 18px rgba(11,13,59,.07)}
+.card.status-posted{border-color:#a3dfc8;background:#f2fbf7}
+.card.status-shot{border-color:#f7bcd9;background:#fff6fa}
+.card-head{display:flex;align-items:center;gap:12px;padding:13px 15px;cursor:pointer}
+.pill{font-family:'Manrope';font-weight:700;font-size:10px;letter-spacing:.5px;text-transform:uppercase;padding:3px 8px;border-radius:6px;white-space:nowrap}
+.p-reel{background:#FDEAF5;color:var(--fuchsia)}
+.p-carousel{background:#EDE7FA;color:var(--purple)}
+.p-story{background:#E5F6EF;color:#0a7a5c}
+.cat-tag{font-size:11px;color:var(--muted);font-weight:500;margin-top:1px}
+.ttl{flex:1;font-family:'Manrope';font-weight:600;font-size:14px;line-height:1.3;min-width:0}
+.cta-tag{font-family:'Manrope';font-weight:700;font-size:10px;background:var(--navy);color:#fff;padding:3px 7px;border-radius:5px;white-space:nowrap}
+.chev{color:var(--muted);transition:.2s;font-size:12px;margin-left:4px}
+.card.open .chev{transform:rotate(90deg)}
+.body{padding:0 15px 15px;display:none}
+.card.open .body{display:block}
+.body h4{font-family:'Manrope';font-weight:700;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--purple);margin:12px 0 5px}
+.body p{font-size:13px;line-height:1.6;margin:0 0 6px;color:#33364d}
+.script{background:var(--light);border-left:3px solid var(--pink);border-radius:0 10px 10px 0;padding:10px 13px;font-size:13px;line-height:1.6;white-space:pre-wrap;color:#2a2d44}
+.visual{background:#fafaff;border:1px dashed var(--line);border-radius:10px;padding:9px 12px;font-size:12px;color:var(--muted);line-height:1.55}
+.statusrow{display:flex;align-items:center;gap:8px;margin-top:12px;padding-top:11px;border-top:1px solid var(--line);flex-wrap:wrap}
+.statusrow>span{font-size:12px;color:var(--muted)}
+.slabel{font-size:12px;font-weight:600;padding:5px 10px;border-radius:7px;cursor:pointer;border:1px solid var(--line);background:#fff;color:var(--muted)}
+.slabel.active[data-s="idea"]{background:#9aa0bb;color:#fff;border-color:transparent}
+.slabel.active[data-s="shot"]{background:var(--pink);color:#fff;border-color:transparent}
+.slabel.active[data-s="posted"]{background:#16a06f;color:#fff;border-color:transparent}
+.id-badge{font-size:10px;font-family:'Manrope';font-weight:700;color:var(--muted);background:var(--light);border-radius:5px;padding:2px 6px}
+
+/* TABLE VIEW */
+.tbl-wrap{overflow-x:auto;border-radius:14px;border:1px solid var(--line);background:#fff}
+table{width:100%;border-collapse:collapse;min-width:900px}
+thead tr{background:var(--navy);color:#fff}
+th{font-family:'Manrope';font-weight:700;font-size:11px;letter-spacing:.4px;text-transform:uppercase;padding:10px 12px;text-align:left;white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--line);font-size:12.5px;vertical-align:top;line-height:1.5}
+tr:last-child td{border-bottom:none}
+tr.status-posted td{background:var(--green-bg)}
+tr.status-shot td{background:var(--pink-bg)}
+tr:not(.status-posted):not(.status-shot):hover td{background:#f8f9ff}
+.tbl-title{font-weight:600;color:var(--ink);max-width:220px}
+.tbl-hook{color:var(--muted);font-size:12px;max-width:200px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tbl-script{color:var(--muted);font-size:11.5px;max-width:220px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;white-space:pre-wrap}
+.expand-btn{background:none;border:none;color:var(--purple);font-size:11px;cursor:pointer;padding:0;font-weight:600}
+.tbl-status select{border:1px solid var(--line);border-radius:7px;padding:4px 8px;font-size:12px;font-family:'Inter';background:#fff;cursor:pointer;color:var(--ink);outline:none}
+.tbl-status select.s-posted{background:var(--green-bg);color:var(--green);border-color:#a3dfc8;font-weight:600}
+.tbl-status select.s-shot{background:var(--pink-bg);color:var(--fuchsia);border-color:#f7bcd9;font-weight:600}
+.tbl-status select.s-idea{background:#f0f1f8;color:var(--muted)}
+.date-input{border:1px solid var(--line);border-radius:7px;padding:4px 7px;font-size:12px;font-family:'Inter';background:#fff;outline:none;color:var(--ink);width:120px}
+.date-input:focus{border-color:var(--purple)}
+
+/* CALENDAR */
+.cal-header{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.counter-badge{font-family:'Manrope';font-weight:800;font-size:28px;color:var(--green)}
+.counter-label{font-size:12px;color:var(--muted)}
+.counter-sub{font-family:'Manrope';font-weight:700;font-size:13px;color:var(--ink)}
+.progress-row{flex:1;min-width:200px}
+.cal-progress{height:8px;background:var(--line);border-radius:20px;overflow:hidden;margin-top:6px}
+.cal-progress>div{height:100%;background:var(--grad);border-radius:20px;transition:width .4s}
+
+.weekhdr{font-family:'Manrope';font-weight:800;font-size:15px;color:var(--navy);margin:16px 0 10px}
+.day-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:12px 15px;margin-bottom:8px;display:flex;gap:14px;align-items:flex-start}
+.day-card.all-posted{border-color:#a3dfc8;background:#f2fbf7}
+.daynum{font-family:'Manrope';font-weight:800;font-size:12px;color:#fff;background:var(--grad);min-width:58px;text-align:center;padding:6px 4px;border-radius:8px;line-height:1.3}
+.daynum small{display:block;font-weight:600;font-size:9px;opacity:.85;letter-spacing:.5px}
+.daycontent{flex:1}
+.dayitem{font-size:13px;line-height:1.5;margin-bottom:6px;display:flex;align-items:flex-start;gap:6px}
+.tagmini{font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px;margin-right:4px;font-family:'Manrope';white-space:nowrap;flex-shrink:0}
+.day-cta{font-size:11px;font-weight:700;background:var(--navy);color:#fff;padding:2px 7px;border-radius:5px;white-space:nowrap;flex-shrink:0;margin-left:auto}
+.day-status-dot{width:10px;height:10px;border-radius:50%;background:var(--line);flex-shrink:0;margin-top:4px;cursor:pointer;border:2px solid var(--line)}
+.day-status-dot.posted{background:var(--green);border-color:var(--green)}
+.day-status-dot.shot{background:var(--pink);border-color:var(--pink)}
+
+.note{font-size:12.5px;color:var(--muted);line-height:1.6;margin-top:16px;padding:13px 15px;background:#fff;border:1px solid var(--line);border-radius:12px}
+.note b{color:var(--ink);font-family:'Manrope'}
+.empty{text-align:center;color:var(--muted);padding:40px 0;font-size:14px}
+
+/* SYNC PANEL */
+.sync-bar{position:fixed;bottom:0;left:0;right:0;background:var(--navy);color:#fff;padding:10px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;z-index:100;font-size:13px}
+.sync-bar input{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;border-radius:8px;padding:6px 12px;font-size:12px;font-family:'Inter';outline:none;width:220px}
+.sync-bar input::placeholder{color:rgba(255,255,255,.4)}
+.sync-bar input:focus{border-color:var(--pink)}
+.sbarbtn{font-family:'Manrope';font-weight:700;font-size:12px;border:none;border-radius:8px;padding:6px 14px;cursor:pointer;transition:.15s}
+.sbarbtn.primary{background:var(--grad);color:#fff}
+.sbarbtn.secondary{background:rgba(255,255,255,.12);color:#fff}
+.sbarbtn:hover{opacity:.85}
+.sync-status{font-size:12px;color:#b9bce0;margin-left:auto}
+.sync-status.ok{color:#4ade80}
+.sync-status.err{color:#f87171}
+.sync-status.loading{color:#fbbf24}
+.sync-hint{font-size:11px;color:rgba(255,255,255,.4);margin-left:4px}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center}
+.modal{background:#fff;border-radius:18px;padding:28px;max-width:480px;width:90%;position:relative}
+.modal h3{font-family:'Manrope';font-weight:800;font-size:18px;margin-bottom:8px;color:var(--navy)}
+.modal p{font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:12px}
+.modal ol{font-size:13px;color:var(--ink);line-height:1.8;padding-left:18px;margin-bottom:16px}
+.modal ol b{color:var(--navy)}
+.modal-close{position:absolute;top:14px;right:16px;background:none;border:none;font-size:18px;cursor:pointer;color:var(--muted)}
+.modal a{color:var(--purple);text-decoration:none;font-weight:600}
+.modal a:hover{text-decoration:underline}
+.wrap{padding-bottom:70px}
+
+@media(max-width:600px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  th,td{padding:7px 8px}
+  .tbl-script{display:none}
+  .tbl-hook{max-width:140px}
+  .tbl-title{max-width:150px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <span class="brandtag">Контент-план · Марк Гордон</span>
+    <h1>Все сценарии в одном месте</h1>
+    <p>Рилсы, карусели и сторис на 14 дней. Юмор про взрослую жизнь + продажа монтажа. Статусы сохраняются в браузере.</p>
+    <div class="stats">
+      <div class="stat"><div class="n" id="s-total">0</div><div class="l">всего</div></div>
+      <div class="stat"><div class="n" id="s-idea" style="color:#9aa0bb">0</div><div class="l">идеи</div></div>
+      <div class="stat"><div class="n" id="s-shot" style="color:var(--pink)">0</div><div class="l">снято</div></div>
+      <div class="stat"><div class="n" id="s-posted" style="color:#16a06f">0</div><div class="l">опубликовано</div></div>
+    </div>
+    <div class="progressbar"><div id="s-bar" style="width:0%"></div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" data-tab="lib">📚 Библиотека</button>
+    <button class="tab" data-tab="tbl">📊 Таблица</button>
+    <button class="tab" data-tab="cal">🗓 14 дней</button>
+  </div>
+
+  <!-- LIBRARY VIEW -->
+  <div id="view-lib">
+    <div class="controls-row">
+      <input class="search" id="search" placeholder="🔍 Поиск по теме, тексту, CTA…">
+    </div>
+    <div class="chips" id="type-chips"></div>
+    <div class="chips" id="cat-chips" style="margin-bottom:16px"></div>
+    <div id="list"></div>
+  </div>
+
+  <!-- TABLE VIEW -->
+  <div id="view-tbl" class="hidden">
+    <div class="controls-row">
+      <input class="search" id="search-tbl" placeholder="🔍 Поиск…">
+    </div>
+    <div class="chips" id="type-chips-tbl" style="margin-bottom:12px"></div>
+    <div class="tbl-wrap">
+      <table id="main-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Тип</th>
+            <th>Услуга/Тема</th>
+            <th>Заголовок</th>
+            <th>Хук</th>
+            <th>Сценарий</th>
+            <th>Визуал</th>
+            <th>CTA</th>
+            <th>Статус</th>
+            <th>Дата</th>
+          </tr>
+        </thead>
+        <tbody id="tbl-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CALENDAR VIEW -->
+  <div id="view-cal" class="hidden">
+    <div class="cal-header">
+      <div>
+        <div class="counter-badge" id="cal-count">0</div>
+        <div class="counter-label">опубликовано из 22 единиц</div>
+      </div>
+      <div class="progress-row">
+        <div class="counter-sub" id="cal-sub">0 из 14 дней закрыты</div>
+        <div class="cal-progress"><div id="cal-bar" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div id="cal-content"></div>
+    <div class="note">💡 <b>Продающая цепочка</b> — в сторис среды (после карусели): мягкий переход к предложению монтажа. <b>CTA:</b> пиши в директ или WhatsApp в шапке. <b>Спецпредложение:</b> 3 первых клиента — 150 ₪/ролик за отзыв и кейс, дальше стандартный прайс.</div>
+  </div>
+</div>
+
+<!-- SYNC BAR -->
+<div class="sync-bar" id="sync-bar">
+  <span style="font-family:'Manrope';font-weight:700;font-size:13px;white-space:nowrap">🔄 Синхронизация</span>
+  <input type="password" id="gh-token" placeholder="GitHub token (ghp_…)" autocomplete="off">
+  <button class="sbarbtn primary" onclick="syncSave()">Сохранить ↑</button>
+  <button class="sbarbtn secondary" onclick="syncLoad()">Загрузить ↓</button>
+  <button class="sbarbtn secondary" onclick="showSyncHelp()" title="Как получить токен">?</button>
+  <span class="sync-status" id="sync-status">не подключено</span>
+</div>
+
+<!-- SYNC HELP MODAL -->
+<div class="modal-bg hidden" id="sync-modal">
+  <div class="modal">
+    <button class="modal-close" onclick="document.getElementById('sync-modal').classList.add('hidden')">✕</button>
+    <h3>Как настроить синхронизацию</h3>
+    <p>Статусы и даты хранятся в твоём <b>GitHub Gist</b> — приватном, бесплатно. Настройка один раз:</p>
+    <ol>
+      <li>Иди на <a href="https://github.com/settings/tokens/new" target="_blank">github.com/settings/tokens/new</a></li>
+      <li>Note: <b>planner-sync</b></li>
+      <li>Срок: <b>No expiration</b></li>
+      <li>Разрешение: поставь галочку <b>gist</b></li>
+      <li>Нажми <b>Generate token</b>, скопируй токен (<b>ghp_…</b>)</li>
+      <li>Вставь в поле слева → <b>Сохранить ↑</b></li>
+    </ol>
+    <p>Токен сохранится в браузере. На другом устройстве введи тот же токен → <b>Загрузить ↓</b>. Данные загрузятся из Gist.</p>
+  </div>
+</div>
+
+<script>
+const ITEMS=[{"id": "r1", "type": "reel", "cat": "Юмор", "cta": "—", "dur": "~30 сек", "title": "Худший понедельник в мире — это воскресенье в Израиле", "hook": "«Если твоя неделя начинается с понедельника — ты не знаешь, что такое настоящая боль» (текст 0–3 сек).", "script": "0:00–0:03 — Будильник, тёмное утро, рука тянется к телефону: «Если твоя неделя начинается с понедельника»\n0:03–0:06 — Лицо в зеркале, помятый: «ты не знаешь, что такое настоящая боль»\n0:06–0:10 — Кофе + телефон с пропущенными звонками: «6:30. Уже звонят.»\n0:10–0:14 — Машина, темнота, дорога: «Все ещё спят»\n0:14–0:18 — Заход в первый магазин, бодрый владелец: «Только не он»\n0:18–0:22 — Телефон звонит снова и снова: «Все одновременно»\n0:22–0:26 — Уставший взгляд, часы 12:00: «А день только начался»\n0:26–0:30 — Финал, он в машине, смотрит в камеру: «И это даже не понедельник. Это воскресенье.»", "visual": "Тема: воскресенье — первый рабочий день, особенно тяжёлый для агента по продажам. Музыка: напряжённое нарастание в первой половине («Adagio in D Minor» или мем «Oh no»), резкий обрыв на финале. Публикация 19:00–20:00.", "caption": "Когда у всего мира воскресенье выходной, а у тебя — старт недели. Агент по продажам понимает.\n\n#агентпопродажам #израиль #воскресенье #взрослаяжизнь #тельавив"}, {"id": "r2", "type": "reel", "cat": "Юмор", "cta": "ОГОНЁК", "dur": "~30 сек", "title": "Я и спортзал: история разочарования", "hook": "«Когда меняешь работу и абонемент в зал плачет».", "script": "0:00–0:03 — Старое фото или кадр в зале: «Я раньше»\n0:03–0:06 — Современное селфи, чуть пузатый: «Я сейчас»\n0:06–0:10 — Открытый шкаф, спортивная одежда: «Форма ждёт»\n0:10–0:14 — Телефон с напоминанием «Зал 18:00»: «Я обещал»\n0:14–0:18 — Кадр еды (бургер, шаурма, фалафель): «Но я ел»\n0:18–0:22 — Диван, он лежит: «А потом устал»\n0:22–0:26 — Селфи в зеркале сбоку, поправился: «И вот результат»\n0:26–0:30 — Финал, смотрит в камеру: «Зал, я вернусь. Когда-нибудь.»", "visual": "Тема: забил на зал на новой работе, поправился, самоирония. Музыка: легко-грустная, иронично-мелодраматичная («Lacrimosa» мем-версия или итальянско-печальное). Публикация 19:00–20:00.", "caption": "Когда последний раз был в зале — помнит только инструктор. Если тоже узнал себя — ставь огонёк 🔥\n\n#спортзал #взрослаяжизнь #забил #израиль #самоирония"}, {"id": "k1", "type": "carousel", "cat": "Услуга", "cta": "ДИРЕКТ", "dur": "7 слайдов", "title": "5 ошибок, которые убивают рилсы малого бизнеса", "hook": "Обложка: «5 ошибок, которые убивают рилсы малого бизнеса в 2026» (листай →).", "script": "Слайд 1 (обложка): 5 ошибок, которые убивают рилсы малого бизнеса в 2026 (листай →)\nСлайд 2 — Ошибка 1: ❌ Нет крючка в первые 3 секунды. Зритель решает за 2 секунды. Правильно: в первом кадре — действие, лицо, вопрос или провокация.\nСлайд 3 — Ошибка 2: ❌ Статичные длинные планы. Камера 8 секунд на одной точке — смерть. Правильно: смена кадра каждые 2–3 секунды.\nСлайд 4 — Ошибка 3: ❌ Нет субтитров. 85% смотрят без звука. Правильно: субтитры на каждый звуковой момент, жирно, крупно.\nСлайд 5 — Ошибка 4: ❌ Случайная музыка. Музыка должна совпадать с ритмом склеек и эмоцией. Правильно: подбор музыки — отдельная работа.\nСлайд 6 — Ошибка 5: ❌ Нет призыва в финале. Правильно: финальный кадр — конкретный шаг («Пиши в директ», «Сохраняй», «Заходи в профиль»).\nСлайд 7 — CTA: Я монтирую рилсы для бизнеса в Израиле. Магазины, салоны, рестораны, тренеры. Беру 3 первых клиентов по спеццене — за отзыв и кейс. Пиши в директ или WhatsApp в шапке.", "visual": "Время публикации: 10:00–11:00 (B2B аудитория на работе). Один фон, один шрифт, акценты ❌→✅.", "caption": "Сохраняй, если делаешь рилсы для своего бизнеса сам. И передай тому, кто делает их за тебя — пусть знает 🎬\n\n#smm #рилсы #монтажрилсов #бизнесизраиль #тельавив"}, {"id": "r3", "type": "reel", "cat": "Юмор", "cta": "—", "dur": "~30 сек", "title": "Когда тебе 38, а друзья зовут в клуб", "hook": "«Звонят друзья. Зовут в клуб. Я в 38.»", "script": "0:00–0:03 — Смотрит на звонящий телефон: «Друзья: пойдём в клуб!»\n0:03–0:07 — Переводит взгляд на тапочки и плед: «Я: посмотри на меня»\n0:07–0:11 — Шкаф, выбирает рубашку: «Хорошо, иду. Сейчас рубашку.»\n0:11–0:15 — В зеркале, серьёзный: «В 20 лет я бы шёл за тусовкой»\n0:15–0:19 — У бара, смотрит на молодёжь: «В 38 — я иду посмотреть, как пьют другие»\n0:19–0:23 — Сидит в углу, листает телефон: «И уйти в 23:30»\n0:23–0:27 — Дома, диван, плед: «Чтобы успеть выспаться»\n0:27–0:30 — Финал, в камеру: «Молодость — это состояние. Усталость — диагноз.»", "visual": "Тема: взрослая жизнь, тусовки в 35+, контраст желания и реальности. Музыка: медленная мелодичная с лёгким клубным элементом («I Wanna Dance With Somebody» медленно или мем «Get Low» с замедлением). Публикация 19:00–20:00.", "caption": "Кто старше 35 — узнал. Кто моложе — подождите, ваш черёд придёт.\n\n#взрослаяжизнь #за35 #клуб #тельавив #израиль"}, {"id": "r4", "type": "reel", "cat": "Сериал", "cta": "—", "dur": "~32 сек", "title": "«Раб дня» — серия 1 (монтаж с пятничной съёмки)", "hook": "«С виду — мужик. Зарплата, авторитет, агент по продажам.»", "script": "0:00–0:04 — Его лицо за столом утром: «С виду — мужик. Агент по продажам.»\n0:04–0:08 — Нарезка кадров с работы (из архива): «В будни — да.»\n0:08–0:11 — Резкий переход, список покупок в руке: «А по пятницам он — раб.»\n0:11–0:15 — Рынок, сумки, выбор овощей: «Пункт 1: рынок. 14 позиций.»\n0:15–0:19 — Багажник с пакетами: «Пункт 2: занести. Не уронить.»\n0:19–0:24 — Кухня, режет/моет/готовит, жена с критикой: «Пункт 3: помочь жене.»\n0:24–0:28 — Гора посуды, руки в раковине: «Пункт 4: посуда.»\n0:28–0:32 — Финал, садится, выдох, в камеру: «Хочешь так же? Женись.»", "visual": "Тема: пятница из жизни мужа — контраст «агента» в будни и «раба» по пятницам. Музыка: лёгкая ироничная — итальянский шансон, ретро-эстрада или мем-трек с лёгким темпом. Публикация 19:00–20:00.", "caption": "Пятница агента. На работе — мужик. Дома — раб. Жена снимала, она же режиссёр этого кошмара. Сериал «Раб дня» — серия 1.\n\n#рабдня #взрослаяжизнь #семья #израиль #пятница"}, {"id": "r5", "type": "reel", "cat": "Сериал", "cta": "—", "dur": "~30 сек", "title": "Рабочий день агента по продажам в Израиле (POV) — серия 1", "hook": "«POV: ты агент по продажам в Израиле. И сегодня вторник.»", "script": "0:00–0:03 — Будильник, темнота: «5:30 утра»\n0:03–0:06 — Селфи в машине, кофе: «Кофе и в дорогу»\n0:06–0:10 — Заход в магазин 1, рукопожатие: «Магазин №1. Знакомый.»\n0:10–0:14 — Магазин 2, другой человек: «Магазин №3. Тоже знакомый.»\n0:14–0:18 — Телефон со звонками: «Один телефон, тридцать звонков»\n0:18–0:22 — Машина между точками: «Между точками — 8 минут»\n0:22–0:26 — Магазин 4, ещё знакомый: «Магазин №7. Я в курсе семьи владельца.»\n0:26–0:30 — Финал, в машине, выдох: «13:00. Половина дня. Ещё 12 точек.»", "visual": "Тема: один день из жизни агента, формат POV, динамичный. Музыка: ритмичная, энергичная (house или hip-hop, быстрый темп), можно мем-трек. Публикация 19:00–20:00.", "caption": "Сериал «Рабочий день агента» — серия 1. Кто тоже в продажах — узнаёт. Кто думает, что это легко — посмотрите ещё раз.\n\n#агентпопродажам #израиль #продажи #тельавив #работа"}, {"id": "k2", "type": "carousel", "cat": "Услуга", "cta": "ДИРЕКТ", "dur": "7 слайдов", "title": "Как один монтаж изменил рилс моей жены: разбор кейса", "hook": "Обложка: «Как один монтаж изменил рилс моей жены. Разбор кейса @seogordon» (листай →).", "script": "Слайд 1 (обложка): Как один монтаж изменил рилс моей жены. Разбор кейса @seogordon (листай →)\nСлайд 2 — Исходник: Жена сняла рилс про SEO. Хороший контент, экспертный голос. Но первый вариант — 60 секунд, статичный, без склеек. Просмотры: [X]. Досмотры: [Y%]. Не зашёл.\nСлайд 3 — Шаг 1: переписал начало. Первые 8 секунд «Привет, я Ирис» вырезал. Новое начало — самый сильный тезис из середины. Сразу, без знакомства.\nСлайд 4 — Шаг 2: разбил на склейки. Один длинный план → 14 склеек, смена кадра каждые 2–3 секунды. Алгоритм увидел «досматривают».\nСлайд 5 — Шаг 3: субтитры и музыка. Жирные субтитры на каждый акцент. Музыка — под темп её речи. Половина успеха.\nСлайд 6 — Результат: просмотры выросли в [X] раз. Досматриваемость — [Y%]. Прирост подписчиков за неделю — [Z]. Тот же контент. Разный монтаж.\nСлайд 7 — CTA: Хочешь, чтобы твой рилс зашёл так же? Беру бизнесы в Израиле на монтаж — пакетами и поштучно. 3 первых клиента — по спеццене за отзыв и кейс. Пиши в директ или WhatsApp в шапке.", "visual": "⚠️ Цифры из слайдов 2 и 6 подставить реальные: до среды 2-й недели сделать монтаж одного рилса жены и зафиксировать «до/после» по охватам. Публикация 10:00–11:00.", "caption": "Сохраняй разбор — пригодится. И если в твоём бизнесе рилсы не заходят — давай посмотрим, что можно изменить 🎬\n\n#монтажрилсов #кейс #smm #бизнесизраиль #тельавив"}, {"id": "r6", "type": "reel", "cat": "Услуга", "cta": "ОГОНЁК", "dur": "~30 сек", "title": "Когда жена просит ещё один рилс в 23:00", "hook": "«23:00. Я лёг. И тут — она.»", "script": "0:00–0:03 — Он на диване, телефон в руке: «23:00. День прожит.»\n0:03–0:06 — Жена подходит в кадре: «И тут — она.»\n0:06–0:10 — Короткий диалог: «Жена: ‘Один маленький’»\n0:10–0:14 — Садится за ноутбук, открывает программу: «Я: ‘Конечно, дорогая’»\n0:14–0:18 — Множество окон, программа, кадры: «Спустя 2 часа»\n0:18–0:22 — Засыпает за ноутбуком: «Спустя 3 часа»\n0:22–0:26 — Готовый рилс на экране: «Готово.»\n0:26–0:30 — Финал, зомби, в камеру: «Если ты тоже монтируешь жене — поставь огонь.»", "visual": "Тема: закулисье монтажа через юмор, «я и правда монтирую». Музыка: комично-драматическая («Crazy in Love» с замедлением или мем «How could this happen to me»). Публикация 19:00–20:00.", "caption": "Все думают, что монтаж — это весело. Монтаж — это в 23:00 за ноутбуком, когда жена попросила «один маленький». Один маленький, ага.\n\n#монтажрилсов #закулисье #семья #взрослаяжизнь"}, {"id": "st1", "type": "story", "cat": "Сторис", "cta": "—", "dur": "серия 5", "title": "Сторис · Воскресенье (старт недели)", "hook": "Синхрон с Рилсом 1: воскресенье — первый рабочий день.", "script": "7:00 — Селфи в машине с кофе: «Воскресенье. Все ещё спят. Я работаю.» (геометка Тель-Авив)\n10:30 — Заход в магазин: «Магазин №1. Привет, [имя]»\n13:00 — Селфи усталый: «Полдень. Это всё ещё первый день недели.» (опрос: «Воскресенье или понедельник хуже?»)\n18:00 — Кадр обложки рилса: «Сегодняшний рилс. Про этот день. ⬆️» (стрелка вверх)\n21:00 — Кадр ужина: «День прожит. Раб ужинает.»", "visual": "Стикеры: геометка, опрос, стрелка вверх на сегодняшний рилс.", "caption": "Дневной ритм: утро → день → вечер. Анонсируй вечерний рилс днём."}, {"id": "st2", "type": "story", "cat": "Сторис", "cta": "—", "dur": "серия 5", "title": "Сторис · Понедельник (только сторис)", "hook": "Будни агента + лёгкий намёк на монтаж.", "script": "7:30 — Машина, утро: «Понедельник. Сюрприз — снова работа.»\n11:00 — Магазин, владелец: «Этот человек видит меня чаще, чем своих детей.»\n14:00 — Текст на однотонном фоне: «Кто из вас работает в продажах? Поднимите руку.» (стикер «Я в продажах / Просто смотрю»)\n19:00 — За ноутбуком, монтаж: «Вечерняя смена. Монтирую жене новый рилс.» (геометка дома/Тель-Авив)\n22:00 — Готовый монтаж на экране: «Готово. Завтра выложит у себя.» (тэг @seogordon)", "visual": "Намёк на услугу монтажа без прямой продажи.", "caption": "День без рилса в ленте, но сторис держат охваты и греют к услуге."}, {"id": "st3", "type": "story", "cat": "Сторис", "cta": "—", "dur": "серия 5", "title": "Сторис · Вторник (с Рилсом 2)", "hook": "Объезд точек + анонс рилса про спортзал.", "script": "8:00 — Машина, выезд: «Вторник. Объезжаю 12 точек.»\n11:30 — Знакомый клиент/агент: «Знакомые лица. Каждый день. Везде.»\n14:00 — Кадр обеда (сытное): «Обед агента. Не диетический.» (опрос: «Я тоже забил / Я держусь»)\n18:30 — Анонс рилса: «Сегодня рилс про зал. Узнаете себя.» (стрелка вверх)\n22:00 — Финал: «Завтра — карусель для бизнеса. Полезное.»", "visual": "Опрос про зал перекликается с рилсом 2.", "caption": "Опрос днём → вечерний рилс получает контекст."}, {"id": "st4", "type": "story", "cat": "Сторис", "cta": "ДИРЕКТ", "dur": "серия 8", "title": "Сторис · Среда (карусель + продающая цепочка)", "hook": "Карусель 1 в ленте + мягкий переход к предложению монтажа.", "script": "8:00 — Утро, кофе: «Среда. Экватор недели.»\n11:00 — Скрин обложки карусели: «Сегодня — полезное для бизнеса. ⬆️» (стрелка вверх)\n13:00 — Текст: «P.S. Я не только агент по продажам. Ещё монтирую рилсы.» (СТАРТ продающей цепочки)\n13:05 — Кадр рилса @seogordon: «Это последняя работа. Делал жене.» (тэг @seogordon)\n13:10 — Текст: «Беру 3 клиентов. 150 ₪ за ролик. За отзыв и кейс. Дальше — стандартный прайс.»\n13:15 — Призыв: «Пиши в директ или WhatsApp в шапке. Отвечаю быстро.» (стикер Send Message)\n19:00 — Закулисье монтажа: «Параллельно монтирую ещё один. Заказ горит.»\n22:00 — Финал: «Завтра рилс про взрослую жизнь. Готовьтесь.»", "visual": "Продающая цепочка: 13:00–13:15 идут подряд, мягко, без давления.", "caption": "Главный продающий блок недели. CTA: директ / WhatsApp."}, {"id": "st5", "type": "story", "cat": "Сторис", "cta": "—", "dur": "серия 5", "title": "Сторис · Четверг (с Рилсом 3)", "hook": "Последний рабочий день + анонс рилса про клуб в 38.", "script": "8:00 — Машина: «Четверг. Последний рабочий день недели.»\n11:00 — Магазин, владелец: «Этот мужик знает меня 6 лет. Покупает у меня всё, кроме совести.»\n14:00 — Текст: «Завтра пятница. У меня — отдых. У вас?» (опрос «Тоже отдых / Работаю»)\n19:00 — Анонс рилса: «Рилс про клубы в 38. Кто узнал — лайк.» (стрелка вверх)\n22:00 — Финал: «Завтра — пятница. Список покупок уже жжёт.»", "visual": "Тизер пятничного сериала «Раб дня» в финале.", "caption": "Готовим аудиторию к пятничному сериалу."}, {"id": "st6", "type": "story", "cat": "Сторис", "cta": "—", "dur": "серия 11", "title": "Сторис · Пятница «Раб дня»", "hook": "День съёмки сериала: муж-«раб» выполняет задания жены.", "script": "8:30 — Завтрак: «Пятница. Я не работаю — но и не отдыхаю.»\n9:30 — Список покупок: «Сегодняшнее задание. От жены.» (опрос «До 10 / Больше 15»)\n11:00 — Рынок, прилавки: «Раб прибыл на рынок.» (геометка рынка)\n11:30 — Кадр с продавцом: «Тут меня тоже все знают.»\n12:30 — Багажник с пакетами: «Миссия 1 — пакеты. Готово.»\n13:30 — Готовка, у плиты: «Поварёнок заступил на смену.»\n14:00 — Жена в кадре, критика: «Контроль качества прибыл.»\n14:30 — Готовое блюдо: «Шаббатний обед. Раб может выдохнуть.» (стикер ❤️)\n19:00 — Сборы: «Вечер пятницы. Куда мы сегодня?» (опрос «Клуб / Друзья»)\n20:30 — Бар/у друзей: «Программа на вечер.» (геометка)\n23:00 — Финал: «Завтра суббота. Идём туда же, куда каждую неделю.» (намёк на субботний путь)", "visual": "Это и съёмочный материал для Рилса 4 «Раб дня».", "caption": "Снимай весь день — из этого монтируется пятничный рилс-сериал."}, {"id": "st7", "type": "story", "cat": "Сторис", "cta": "—", "dur": "серия 7", "title": "Сторис · Суббота «Субботний путь» (серия 1)", "hook": "Интрига-сериал: каждую субботу один и тот же маршрут, без объяснений.", "script": "10:00 — Сборы, машина: «Суббота. Идём туда же.»\n11:00 — Дорога вдоль моря, обычный пляж: «Каждую субботу — один и тот же путь.» (геометка обычного пляжа)\n11:30 — Виды моря: «Никому не скажу, куда идём.»\n12:30 — Ноги в песке / кофе из термоса: «Главное — не доходить до точки.»\n14:00 — Виды, ветер: «Здесь хорошо.»\n16:00 — Возвращение: «До следующей субботы.»\n20:00 — Дома: «Завтра воскресенье. Снова в бой.»", "visual": "Никаких деталей о точке назначения. Сила — в сохранении тайны.", "caption": "Сериал на интриге: новые кадры того же маршрута каждую неделю."}, {"id": "st8", "type": "story", "cat": "Сторис", "cta": "—", "dur": "серия 5", "title": "Сторис · Воскресенье (с Рилсом «Раб дня»)", "hook": "Старт 2-й недели + анонс рилса с пятничной съёмки.", "script": "7:00 — Утро, машина: «Снова воскресенье. Снова в бой.»\n10:30 — Магазин: «Первый клиент недели. Знакомый.»\n13:00 — Текст: «Кстати — вечером выйдет рилс. Про мою пятничную жизнь.» (стикер ⏰)\n18:30 — Обложка рилса: «Вышел. Смотрите. Жена смеётся над собой тоже.» (стрелка вверх)\n22:00 — Реакция на свой рилс: «Жена снимала. Я страдал. Вам — смешно.»", "visual": "Анонс рилса 4 «Раб дня».", "caption": "Тизер днём → выход рилса вечером."}, {"id": "st9", "type": "story", "cat": "Сторис", "cta": "—", "dur": "серия 5", "title": "Сторис · Понедельник (только сторис)", "hook": "Будни + сбор аудитории с бизнесом под среду.", "script": "7:30 — Утро: «Понедельник. Работа. Список не закончился.»\n11:00 — Магазин: «Помните, говорил, что меня везде знают? Вот доказательство.»\n14:00 — Реакция на вчерашний рилс: «Вчерашний рилс уже посмотрело [число] человек. Спасибо.»\n19:00 — Вечер, монтаж: «Сегодня монтирую заказ клиента.»\n22:00 — Финал: «Кто из вас имеет свой бизнес? Любой.» (опрос «Да / Нет»)", "visual": "Опрос про бизнес готовит почву под карусель-кейс в среду.", "caption": "Сегментируем аудиторию: кто с бизнесом — будущие клиенты на монтаж."}, {"id": "st10", "type": "story", "cat": "Сторис", "cta": "—", "dur": "серия 5", "title": "Сторис · Вторник (с Рилсом «Рабочий день агента»)", "hook": "14 точек за день + анонс POV-рилса.", "script": "8:00 — Машина: «Вторник. Сегодня — 14 точек.»\n11:00 — Магазин, владелец: «Этот человек — друг семьи. Уже.»\n14:00 — Текст: «Кто-то из вас работает на себя? Свой магазин, бизнес?» (опрос «Да, своё / Нет, наёмный»)\n19:00 — Анонс рилса: «Сегодня — рилс про мой обычный день. Без приукрашивания.» (стрелка вверх)\n22:00 — Финал: «Завтра — карусель для бизнеса. Полезное.»", "visual": "Опрос дублирует логику воскресенья — добор аудитории под среду.", "caption": "Вторник готовит продающую среду."}, {"id": "st11", "type": "story", "cat": "Сторис", "cta": "ДИРЕКТ", "dur": "серия 8", "title": "Сторис · Среда (карусель-кейс + продающая цепочка)", "hook": "Карусель 2 (кейс монтажа) + продающая цепочка.", "script": "8:00 — Утро: «Среда. Сегодня — разбор реального кейса.»\n10:30 — Обложка карусели: «Карусель в ленте. Про монтаж рилса жены.» (стрелка вверх)\n13:00 — Текст: «Если у тебя бизнес и рилсы не заходят — это лечится.» (СТАРТ цепочки)\n13:05 — Скрин готового рилса: «Вот пример. Монтировал жене. Охваты выросли в [X] раз.» (тэг @seogordon)\n13:10 — Текст: «3 первых клиента — 150 ₪/ролик. Дальше — стандартный прайс. Пакетами дешевле.»\n13:15 — Призыв: «Пиши в директ. Или WhatsApp в шапке. Обсудим за 10 минут.» (стикер Send Message)\n19:00 — Закулисье: «Уже два сообщения. Отвечаю.»\n22:00 — Финал: «Завтра — рилс про монтаж. С приколом.»", "visual": "Вторая продающая цепочка недели, уже с кейсом-доказательством.", "caption": "Ключевой продающий блок 2-й недели. CTA: директ / WhatsApp."}, {"id": "st12", "type": "story", "cat": "Сторис", "cta": "—", "dur": "серия 5", "title": "Сторис · Четверг (с Рилсом про монтаж в 23:00)", "hook": "Последний рабочий день + анонс рилса-закулисья.", "script": "8:00 — Машина: «Четверг. Последний рабочий день недели.»\n11:00 — Магазин: «Знакомые лица. Каждый день. Везде.»\n14:00 — Текст: «Сколько у вас в директе сообщений сейчас?» (опрос «До 5 / Больше 20»)\n19:00 — Анонс рилса: «Рилс про монтаж в 23:00. Узнаёте ли вы себя?» (стрелка вверх)\n22:00 — Финал: «Завтра пятница. Список покупок уже видит меня в кошмарах.»", "visual": "Тизер пятничного «Раба дня» эпизод 2.", "caption": "Связка с рилсом 6 про закулисье монтажа."}, {"id": "st13", "type": "story", "cat": "Сторис", "cta": "—", "dur": "серия 9", "title": "Сторис · Пятница «Раб дня» (эпизод 2)", "hook": "Продолжение сериала — пятница раба, версия 2.", "script": "8:30 — Завтрак: «Пятница. Эпизод 2 сериала ‘Раб дня’.»\n9:30 — Список покупок: «Сегодня — 17 позиций. Прогресс.»\n11:00 — Рынок: «Знакомые продавцы. Они уже знают мой список.» (геометка рынка)\n12:30 — Багажник: «Снова занёс. Снова не уронил. Победа.»\n13:30 — Готовка: «Сегодня готовим — что велят.»\n14:30 — Готовое блюдо: «Шаббатний обед готов. Раб может присесть.» (стикер ❤️)\n19:00 — Сборы вечером: «Куда сегодня?» (опрос «Клуб / Друзья»)\n20:30 — На месте: «Программа в действии.» (геометка)\n23:00 — Возвращение: «Завтра — снова туда.» (намёк на субботний путь)", "visual": "Тот же формат, но эпизод второй — отсылки к серии 1.", "caption": "Сериал работает на узнавание: «опять пятница раба»."}, {"id": "st14", "type": "story", "cat": "Сторис", "cta": "—", "dur": "серия 7", "title": "Сторис · Суббота «Субботний путь» (серия 2)", "hook": "Продолжение интриги: тот же маршрут, новые кадры.", "script": "10:00 — Сборы: «Снова суббота. Снова туда.»\n11:00 — Обычный пляж: «Маршрут не меняется.» (геометка обычного пляжа)\n12:00 — Виды моря: «А вы куда ходите каждую субботу?» (стикер-вопрос)\n14:00 — Песок, ветер: «Тишина. Море. Нас двое.»\n16:00 — Машина, обратно: «До следующей субботы.»\n20:00 — Дома: «Завтра в бой.»", "visual": "Никаких новых деталей о точке назначения — интрига сохраняется.", "caption": "Только новые кадры того же маршрута. Сила — в тайне."}];
+
+const CAL_DAYS=[{"d": 1, "dow": "Вс", "week": 1, "items": [{"type": "reel", "text": "Рилс 1: воскресенье — старт недели", "cta": "—", "ref": "r1"}, {"type": "story", "text": "Сторис: ритм дня + анонс рилса", "cta": "—", "ref": "st1"}]}, {"d": 2, "dow": "Пн", "week": 1, "items": [{"type": "story", "text": "Только сторис: будни агента", "cta": "—", "ref": "st2"}]}, {"d": 3, "dow": "Вт", "week": 1, "items": [{"type": "reel", "text": "Рилс 2: я и спортзал", "cta": "ОГОНЁК", "ref": "r2"}, {"type": "story", "text": "Сторис: обед агента + анонс", "cta": "—", "ref": "st3"}]}, {"d": 4, "dow": "Ср", "week": 1, "items": [{"type": "carousel", "text": "Карусель 1: 5 ошибок в рилсах", "cta": "ДИРЕКТ", "ref": "k1"}, {"type": "story", "text": "Сторис: продающая цепочка", "cta": "ДИРЕКТ", "ref": "st4"}]}, {"d": 5, "dow": "Чт", "week": 1, "items": [{"type": "reel", "text": "Рилс 3: клуб в 38", "cta": "—", "ref": "r3"}, {"type": "story", "text": "Сторис: четверг + анонс", "cta": "—", "ref": "st5"}]}, {"d": 6, "dow": "Пт", "week": 1, "items": [{"type": "story", "text": "Только сторис: «Раб дня» (день съёмки)", "cta": "—", "ref": "st6"}]}, {"d": 7, "dow": "Сб", "week": 1, "items": [{"type": "story", "text": "Только сторис: «Субботний путь»", "cta": "—", "ref": "st7"}]}, {"d": 8, "dow": "Вс", "week": 2, "items": [{"type": "reel", "text": "Рилс 4: «Раб дня» серия 1", "cta": "—", "ref": "r4"}, {"type": "story", "text": "Сторис: анонс рилса", "cta": "—", "ref": "st8"}]}, {"d": 9, "dow": "Пн", "week": 2, "items": [{"type": "story", "text": "Только сторис: будни + вопрос о бизнесе", "cta": "—", "ref": "st9"}]}, {"d": 10, "dow": "Вт", "week": 2, "items": [{"type": "reel", "text": "Рилс 5: рабочий день агента (POV)", "cta": "—", "ref": "r5"}, {"type": "story", "text": "Сторис: вторник + анонс", "cta": "—", "ref": "st10"}]}, {"d": 11, "dow": "Ср", "week": 2, "items": [{"type": "carousel", "text": "Карусель 2: кейс монтажа рилса жены", "cta": "ДИРЕКТ", "ref": "k2"}, {"type": "story", "text": "Сторис: продающая цепочка", "cta": "ДИРЕКТ", "ref": "st11"}]}, {"d": 12, "dow": "Чт", "week": 2, "items": [{"type": "reel", "text": "Рилс 6: жена просит рилс в 23:00", "cta": "ОГОНЁК", "ref": "r6"}, {"type": "story", "text": "Сторис: четверг + анонс", "cta": "—", "ref": "st12"}]}, {"d": 13, "dow": "Пт", "week": 2, "items": [{"type": "story", "text": "Только сторис: «Раб дня» эпизод 2", "cta": "—", "ref": "st13"}]}, {"d": 14, "dow": "Сб", "week": 2, "items": [{"type": "story", "text": "Только сторис: «Субботний путь» серия 2", "cta": "—", "ref": "st14"}]}];
+
+const TYPES=[{k:'all',l:'Всё'},{k:'reel',l:'Рилсы'},{k:'carousel',l:'Карусели'},{k:'story',l:'Сторис'}];
+const CATS=['Все','Юмор','Сериал','Услуга','Сторис'];
+const S_KEY='mark-planner-v1';
+let status={};
+let dates={};
+try{const r=localStorage.getItem(S_KEY);if(r){const d=JSON.parse(r);status=d.status||{};dates=d.dates||{};}}catch(e){}
+function persist(){try{localStorage.setItem(S_KEY,JSON.stringify({status,dates}));}catch(e){}}
+let curType='all',curCat='Все',curQ='',curQtbl='',curTypeTbl='all',openSet={};
+
+function typeMeta(t){
+  return t==='reel'?{cls:'p-reel',l:'РИЛС',bg:'#FDEAF5',c:'#C13BAA'}
+    :t==='carousel'?{cls:'p-carousel',l:'КАРУСЕЛЬ',bg:'#EDE7FA',c:'#5B2F90'}
+    :{cls:'p-story',l:'СТОРИС',bg:'#E5F6EF',c:'#0a7a5c'};
+}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function setStatus(id,s){status[id]=s;persist();renderAll();}
+function setDate(id,v){dates[id]=v;persist();}
+
+function renderStats(){
+  const total=ITEMS.length;
+  const posted=Object.values(status).filter(s=>s==='posted').length;
+  const shot=Object.values(status).filter(s=>s==='shot').length;
+  document.getElementById('s-total').textContent=total;
+  document.getElementById('s-posted').textContent=posted;
+  document.getElementById('s-shot').textContent=shot;
+  document.getElementById('s-idea').textContent=total-posted-shot;
+  document.getElementById('s-bar').style.width=Math.round(posted/total*100)+'%';
+}
+
+function renderChips(){
+  ['type-chips','type-chips-tbl'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    const isTbl=id.includes('tbl');
+    const cur=isTbl?curTypeTbl:curType;
+    el.innerHTML=TYPES.map(t=>'<button class="chip'+(cur===t.k?' active':'')+'" data-type="'+t.k+'"'+(isTbl?' data-tbl="1"':'')+'>'+t.l+'</button>').join('');
+  });
+  document.getElementById('cat-chips').innerHTML=CATS.map(c=>'<button class="chip'+(curCat===c?' active':'')+'" data-cat="'+c+'">'+c+'</button>').join('');
+}
+
+function filteredItems(q,type,cat){
+  return ITEMS.filter(i=>{
+    if(type!=='all'&&i.type!==type)return false;
+    if(cat&&cat!=='Все'&&i.cat!==cat)return false;
+    if(q){const s=(i.title+' '+i.hook+' '+i.script+' '+i.cta+' '+i.cat).toLowerCase();if(!s.includes(q.toLowerCase()))return false;}
+    return true;
+  });
+}
+
+function renderList(){
+  const list=document.getElementById('list');
+  const filtered=filteredItems(curQ,curType,curCat);
+  if(!filtered.length){list.innerHTML='<div class="empty">Ничего не найдено. Сбрось фильтры.</div>';return;}
+  const st_map={idea:'Идея',shot:'Снято',posted:'Опубликовано'};
+  list.innerHTML=filtered.map(i=>{
+    const m=typeMeta(i.type);const st=status[i.id];const op=openSet[i.id];
+    const labels=['idea','shot','posted'].map(s=>'<button class="slabel'+(st===s?' active':'')+'" data-s="'+s+'" data-id="'+i.id+'">'+st_map[s]+'</button>').join('');
+    return '<div class="card'+(op?' open':'')+' status-'+(st||'idea')+'" id="card-'+i.id+'">'+
+      '<div class="card-head" data-toggle="'+i.id+'">'+
+        '<span class="id-badge">'+i.id+'</span>'+
+        '<span class="pill '+m.cls+'">'+m.l+'</span>'+
+        '<div style="flex:1;min-width:0"><div class="ttl">'+esc(i.title)+'</div><div class="cat-tag">'+i.cat+'</div></div>'+
+        '<div style="display:flex;align-items:center;gap:6px;flex-shrink:0">'+(i.cta!=='—'?'<span class="cta-tag">'+i.cta+'</span>':'')+'<span class="chev">▶</span></div>'+
+      '</div>'+
+      '<div class="body">'+
+        '<p style="font-size:11px;color:var(--muted)">⏱ '+i.dur+'</p>'+
+        '<h4>Хук / обложка</h4><p>'+esc(i.hook)+'</p>'+
+        '<h4>Сценарий</h4><div class="script">'+esc(i.script)+'</div>'+
+        '<h4>Визуал / монтаж</h4><div class="visual">'+esc(i.visual)+'</div>'+
+        '<h4>Подпись (caption)</h4><p>'+esc(i.caption)+'</p>'+
+        '<div class="statusrow"><span>Статус:</span>'+labels+'</div>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+}
+
+function renderTable(){
+  const tbody=document.getElementById('tbl-body');
+  const filtered=filteredItems(curQtbl,curTypeTbl,null);
+  if(!filtered.length){tbody.innerHTML='<tr><td colspan="10" style="text-align:center;color:var(--muted);padding:30px">Ничего не найдено</td></tr>';return;}
+  tbody.innerHTML=filtered.map(i=>{
+    const m=typeMeta(i.type);const st=status[i.id]||'idea';const dt=dates[i.id]||'';
+    const stClass=st==='posted'?'s-posted':st==='shot'?'s-shot':'s-idea';
+    return '<tr class="status-'+st+'">'+
+      '<td><span class="id-badge">'+i.id+'</span></td>'+
+      '<td><span class="pill '+m.cls+'">'+m.l+'</span></td>'+
+      '<td>'+esc(i.cat)+'</td>'+
+      '<td class="tbl-title">'+esc(i.title)+'</td>'+
+      '<td class="tbl-hook">'+esc(i.hook)+'</td>'+
+      '<td class="tbl-script">'+esc(i.script)+'</td>'+
+      '<td style="font-size:11.5px;color:var(--muted);max-width:160px">'+esc(i.visual)+'</td>'+
+      '<td>'+(i.cta!=='—'?'<span class="cta-tag">'+i.cta+'</span>':'-')+'</td>'+
+      '<td class="tbl-status"><select class="'+stClass+'" data-id="'+i.id+'" onchange="setStatus(this.dataset.id,this.value);renderAll()">'+
+        '<option value="idea"'+(st==='idea'?' selected':'')+'>Идея</option>'+
+        '<option value="shot"'+(st==='shot'?' selected':'')+'>Снято</option>'+
+        '<option value="posted"'+(st==='posted'?' selected':'')+'>Опубликовано</option>'+
+      '</select></td>'+
+      '<td><input type="date" class="date-input" value="'+dt+'" data-id="'+i.id+'" onchange="setDate(this.dataset.id,this.value)"></td>'+
+    '</tr>';
+  }).join('');
+}
+
+function renderCal(){
+  const posted=Object.values(status).filter(s=>s==='posted').length;
+  const totalPosts=22; // 6 рилсов + 2 карусели + 14 сторис
+  document.getElementById('cal-count').textContent=posted;
+  document.getElementById('cal-bar').style.width=Math.round(posted/ITEMS.length*100)+'%';
+
+  // Count fully posted days
+  let fullDays=0;
+  CAL_DAYS.forEach(day=>{
+    const refs=day.items.map(it=>it.ref);
+    if(refs.every(r=>status[r]==='posted'))fullDays++;
+  });
+  document.getElementById('cal-sub').textContent=fullDays+' из 14 дней опубликованы полностью';
+
+  const weeks={1:'Неделя 1 — знакомство и юмор',2:'Неделя 2 — сериалы и продажа монтажа'};
+  let html='';
+  [1,2].forEach(w=>{
+    html+='<div class="weekhdr">'+weeks[w]+'</div>';
+    CAL_DAYS.filter(d=>d.week===w).forEach(day=>{
+      const allPosted=day.items.every(it=>status[it.ref]==='posted');
+      html+='<div class="day-card'+(allPosted?' all-posted':'')+'">'+
+        '<div class="daynum">'+day.dow+'<small>День '+day.d+'</small></div>'+
+        '<div class="daycontent">';
+      day.items.forEach(it=>{
+        const m=typeMeta(it.type);
+        const st=status[it.ref]||'idea';
+        html+='<div class="dayitem">'+
+          '<span class="day-status-dot '+st+'" title="'+it.ref+'"></span>'+
+          '<span class="tagmini" style="background:'+m.bg+';color:'+m.c+'">'+m.l+'</span>'+
+          '<span>'+esc(it.text)+'</span>'+
+          (it.cta&&it.cta!=='—'?'<span class="day-cta">'+it.cta+'</span>':'')+
+        '</div>';
+      });
+      html+='</div></div>';
+    });
+  });
+  document.getElementById('cal-content').innerHTML=html;
+}
+
+function renderAll(){renderStats();renderList();renderTable();renderCal();}
+
+document.addEventListener('click',function(e){
+  const tab=e.target.closest('[data-tab]');
+  if(tab){
+    document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+    tab.classList.add('active');
+    const t=tab.dataset.tab;
+    document.getElementById('view-lib').classList.toggle('hidden',t!=='lib');
+    document.getElementById('view-tbl').classList.toggle('hidden',t!=='tbl');
+    document.getElementById('view-cal').classList.toggle('hidden',t!=='cal');
+    return;
+  }
+  const typeBtn=e.target.closest('[data-type]');
+  if(typeBtn){
+    if(typeBtn.dataset.tbl){curTypeTbl=typeBtn.dataset.type;}
+    else{curType=typeBtn.dataset.type;}
+    renderChips();renderList();renderTable();return;
+  }
+  const catBtn=e.target.closest('[data-cat]');
+  if(catBtn){curCat=catBtn.dataset.cat;renderChips();renderList();return;}
+  const lbl=e.target.closest('.slabel');
+  if(lbl){setStatus(lbl.dataset.id,lbl.dataset.s);return;}
+  const toggle=e.target.closest('[data-toggle]');
+  if(toggle){const id=toggle.dataset.toggle;openSet[id]=!openSet[id];renderList();return;}
+});
+document.getElementById('search').addEventListener('input',function(e){curQ=e.target.value;renderList();});
+document.getElementById('search-tbl').addEventListener('input',function(e){curQtbl=e.target.value;renderTable();});
+
+// ---- GITHUB GIST SYNC ----
+const GIST_KEY='mark-planner-gist-id';
+const TOKEN_KEY='mark-planner-gh-token';
+
+function getToken(){
+  const inp=document.getElementById('gh-token').value.trim();
+  if(inp){localStorage.setItem(TOKEN_KEY,inp);return inp;}
+  return localStorage.getItem(TOKEN_KEY)||'';
+}
+function setSyncStatus(msg,cls){
+  const el=document.getElementById('sync-status');
+  el.textContent=msg;el.className='sync-status '+(cls||'');
+}
+function showSyncHelp(){document.getElementById('sync-modal').classList.remove('hidden');}
+
+async function syncSave(){
+  const token=getToken();
+  if(!token){setSyncStatus('нет токена','err');showSyncHelp();return;}
+  setSyncStatus('сохраняю…','loading');
+  const payload=JSON.stringify({status,dates});
+  const gistId=localStorage.getItem(GIST_KEY);
+  try{
+    let res;
+    if(gistId){
+      res=await fetch('https://api.github.com/gists/'+gistId,{
+        method:'PATCH',
+        headers:{'Authorization':'token '+token,'Content-Type':'application/json'},
+        body:JSON.stringify({files:{'planner-data.json':{content:payload}}})
+      });
+    }else{
+      res=await fetch('https://api.github.com/gists',{
+        method:'POST',
+        headers:{'Authorization':'token '+token,'Content-Type':'application/json'},
+        body:JSON.stringify({description:'Марк контент-план статусы',public:false,files:{'planner-data.json':{content:payload}}})
+      });
+    }
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    localStorage.setItem(GIST_KEY,data.id);
+    setSyncStatus('✓ сохранено '+new Date().toLocaleTimeString('ru'),'ok');
+  }catch(e){setSyncStatus('ошибка: '+e.message,'err');}
+}
+
+async function syncLoad(){
+  const token=getToken();
+  if(!token){setSyncStatus('нет токена','err');showSyncHelp();return;}
+  setSyncStatus('загружаю…','loading');
+  try{
+    // Try to find our gist
+    const gistId=localStorage.getItem(GIST_KEY);
+    let url=gistId?'https://api.github.com/gists/'+gistId:'https://api.github.com/gists?per_page=30';
+    const res=await fetch(url,{headers:{'Authorization':'token '+token}});
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    let raw;
+    if(gistId){
+      const g=await res.json();
+      const f=g.files['planner-data.json'];
+      raw=f.truncated?(await fetch(f.raw_url)).text():f.content;
+    }else{
+      const list=await res.json();
+      const g=list.find(g=>g.files['planner-data.json']);
+      if(!g)throw new Error('Gist не найден — сначала сохрани с этого устройства');
+      localStorage.setItem(GIST_KEY,g.id);
+      const gr=await fetch('https://api.github.com/gists/'+g.id,{headers:{'Authorization':'token '+token}});
+      const gd=await gr.json();
+      const f=gd.files['planner-data.json'];
+      raw=f.content;
+    }
+    const d=JSON.parse(await raw);
+    status=d.status||{};dates=d.dates||{};
+    persist();renderAll();
+    setSyncStatus('✓ загружено '+new Date().toLocaleTimeString('ru'),'ok');
+  }catch(e){setSyncStatus('ошибка: '+e.message,'err');}
+}
+
+// Restore token to input if saved
+(function(){const t=localStorage.getItem(TOKEN_KEY);if(t)document.getElementById('gh-token').value=t;})();
+// ---- END SYNC ----
+
+renderChips();
+renderAll();
+</script>
+</body>
+</html>
