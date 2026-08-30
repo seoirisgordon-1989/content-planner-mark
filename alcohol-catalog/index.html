@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>קטלוג אלכוהול</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet" />
+<script src="catalog-images.js"></script>
+<style>
+  html, body { margin: 0; padding: 0; background: #f6f5f2; -webkit-text-size-adjust: 100%; }
+  * { box-sizing: border-box; }
+  a { color: #1f5f4a; }
+  a:hover { color: #113a2d; }
+  input { font-family: inherit; }
+  img { -webkit-user-drag: none; }
+  body { min-height: 100vh; background: #f6f5f2; color: #17170f; font-family: Heebo, 'Noto Sans Hebrew', Arial, sans-serif; }
+
+  .header { position: sticky; top: 0; z-index: 20; background: rgba(246,245,242,0.97); backdrop-filter: blur(6px); border-bottom: 1px solid #d8d4ca; padding: 14px 16px 10px; }
+  .header-row { display: flex; align-items: baseline; gap: 10px; }
+  .title { font-size: 19px; font-weight: 800; letter-spacing: -0.01em; }
+  .subtitle { font-size: 12px; color: #7a766c; font-weight: 500; }
+  .count { margin-right: auto; font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #4a4740; }
+  .search { width: 100%; margin-top: 10px; padding: 10px 12px; font-size: 15px; border: 1px solid #cfcbc1; border-radius: 8px; background: #fffefb; outline: none; color: #17170f; }
+  .chips { display: flex; gap: 6px; overflow-x: auto; margin-top: 10px; padding-bottom: 2px; }
+  .chip { flex: 0 0 auto; padding: 6px 12px; font-size: 13px; font-family: inherit; font-weight: 500; border: 1px solid #cfcbc1; border-radius: 999px; background: transparent; color: #4a4740; cursor: pointer; white-space: nowrap; }
+  .chip.active { font-weight: 700; border-color: #17170f; background: #17170f; color: #f6f5f2; }
+
+  .main { padding: 4px 16px 60px; max-width: 1200px; margin: 0 auto; }
+  .group { margin-top: 22px; }
+  .group-head { display: flex; align-items: baseline; gap: 8px; padding-bottom: 6px; border-bottom: 2px solid #17170f; }
+  .group-head h2 { margin: 0; font-size: 15px; font-weight: 800; letter-spacing: 0.02em; }
+  .group-count { font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #7a766c; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(148px, 1fr)); gap: 10px; margin-top: 12px; }
+  .card { background: #fffefb; border: 1px solid #e2ded4; border-radius: 10px; overflow: hidden; display: flex; flex-direction: column; }
+  .card-img-wrap { background: #fff; border-bottom: 1px solid #eeebe3; }
+  .card-img-wrap img { display: block; width: 100%; aspect-ratio: 154 / 166; object-fit: contain; }
+  .card-body { padding: 8px 9px 9px; display: flex; flex-direction: column; gap: 5px; flex: 1; }
+  .card-name { font-size: 13.5px; font-weight: 500; line-height: 1.3; flex: 1; }
+  .card-price { display: flex; align-items: baseline; gap: 3px; }
+  .price-num { font-family: 'IBM Plex Mono', monospace; font-size: 19px; font-weight: 600; letter-spacing: -0.02em; }
+  .price-sym { font-size: 12px; color: #7a766c; }
+  .empty { padding: 60px 0; text-align: center; color: #7a766c; font-size: 14px; }
+  .footnote { margin-top: 36px; padding-top: 12px; border-top: 1px solid #d8d4ca; font-size: 12px; color: #7a766c; line-height: 1.6; }
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-row">
+      <div class="title">קטלוג אלכוהול</div>
+      <div class="subtitle">מחיר א</div>
+      <div class="count" id="count"></div>
+    </div>
+    <input type="text" id="search" class="search" placeholder="חיפוש לפי שם" />
+    <div class="chips" id="chips"></div>
+  </div>
+
+  <div class="main">
+    <div id="groups"></div>
+    <div class="empty" id="empty" style="display:none">לא נמצאו תוצאות</div>
+    <div class="footnote">שמות, מחירים ותמונות מתוך הקטלוג המקורי. <span id="total"></span> פריטים.</div>
+  </div>
+
+<script>
+const order = ['וודקה', 'וויסקי', "ג'ין", 'רום', 'טקילה', 'ליקרים ומרים', 'ערק', 'ברנדי וכוהל', 'בירה', 'קוקטיילים', 'משקאות אנרגיה'];
+
+const items = [
+  ['וודקה', 'אבסולוט ליטר', 85, 1],
+  ['וודקה', 'אבסולוט 200 מ"ל', 25, 2],
+  ['וודקה', 'בלוגה 200 מ"ל חברה', 44, 17],
+  ['וודקה', 'בלוגה 700 מ"ל', 120, 18],
+  ['וודקה', 'בלוגה ליטר חברה', 142, 19],
+  ['וודקה', 'בלוגה טראנס ליטר', 175, 20],
+  ['וודקה', 'גריי גוס 700 מ"ל', 120, 39],
+  ['וודקה', 'גריי גוס ליטר', 142, 40],
+  ['וודקה', 'פינלנדיה 200 מל', 23.5, 74],
+  ['וודקה', 'פינלנדיה 375 מל', 39, 75],
+  ['וודקה', 'פינלנדיה 500 מל', 45, 76],
+  ['וודקה', 'פינלנדיה 500 מל חברה', 48, 77],
+  ['וודקה', 'פינלנדיה ליטר', 78, 78],
+  ['וודקה', 'קטל ואן ליטר חברה', 115, 82],
+  ['וודקה', 'רוסקי סטנדרט 200 מל', 22.5, 101],
+  ['וודקה', 'רוסקי 500 מל', 49, 102],
+  ['וודקה', 'רוסקי סטנדרט 700 מל', 62, 103],
+  ['וודקה', 'רוסקי סטנדרט ליטר', 78, 104],
+  ['וודקה', 'סמירנוף 200 מל', 21.5, 67],
+  ['וודקה', 'וולדוף וודקה 200 מ"ל', 10, 52],
+  ['וודקה', 'ואן גוך 700', 120, 46],
+  ['וודקה', 'ואן גוך אבטיח ליטר', 139, 47],
+  ['וודקה', 'ואן גוך אסאי ליטר', 139, 48],
+  ['וודקה', 'ואן גוך אננס ליטר', 139, 49],
+  ['וודקה', 'ואן גוך מלון ליטר', 139, 50],
+
+  ['וויסקי', 'בלאק לייבל 200 מ"ל', 41, 14],
+  ['וויסקי', 'בלאק לייבל 700 מ"ל IBLS', 110, 15],
+  ['וויסקי', 'בלאק לייבל ליטר IBLS', 135, 16],
+  ['וויסקי', 'רד לייבל 200 מל', 25, 98],
+  ['וויסקי', 'רד לייבל 700 חברה', 75, 99],
+  ['וויסקי', 'רד לייבל ליטר', 97, 100],
+  ['וויסקי', 'בלנטיינס 200 מ"ל', 26, 21],
+  ['וויסקי', 'בלנטיינס 750 מ"ל', 75, 22],
+  ['וויסקי', 'בלנטיינס ליטר', 97, 23],
+  ['וויסקי', 'ג\'ימסון 200 מ"ל', 38, 27],
+  ['וויסקי', 'ג\'ימסון 700 מ"ל', 87, 28],
+  ['וויסקי', 'ג\'ימסון ליטר', 114, 29],
+  ['וויסקי', 'ג\'ים בים 700 מ"ל', 72, 30],
+  ['וויסקי', 'ג\'ק דניאלס 200 מ"ל', 37, 31],
+  ['וויסקי', 'ג\'ק דניאלס 700 מ"ל', 90, 32],
+  ['וויסקי', 'ג\'ק דניאלס ליטר', 120, 33],
+  ['וויסקי', 'ג\'ק דבש 700 מ"ל', 90, 34],
+  ['וויסקי', 'ג\'ק דניאלס דבש ליטר', 120, 35],
+  ['וויסקי', 'ג\'ק תפוח 700 מ"ל', 90, 36],
+  ['וויסקי', 'גרנטס 200 מ"ל', 21.5, 41],
+  ['וויסקי', 'גרנטס 700 מ"ל', 60, 42],
+  ['וויסקי', 'גרנטס ליטר', 85, 43],
+  ['וויסקי', 'בושמילס ליטר', 98, 11],
+  ['וויסקי', 'גלנפידיך 12 צהוב 700 מ"ל', 148, 38],
+  ['וויסקי', 'מנקי שולדרס 700 מ"ל', 114, 62],
+  ['וויסקי', 'מנקי שולדרס ליטר', 135, 63],
+  ['וויסקי', 'שיבאס 200 מ"ל', 39, 106],
+  ['וויסקי', 'שיבאס ליטר', 125, 105],
+  ['וויסקי', 'שיבאס 18 שנה 700 מ"ל', 195, 107],
+
+  ["ג'ין", 'בומבי ליטר', 110, 10],
+  ["ג'ין", 'גורדונס ליטר', 85, 37],
+  ["ג'ין", 'טנג\'ראי 700', 88, 56],
+
+  ['רום', 'קפטן מורגן ספייס ליטר', 89, 90],
+
+  ['טקילה', 'פטרון סילבר 700 מ"ל', 149, 73],
+  ['טקילה', 'קוארבו סילבר ליטר', 95, 79],
+
+  ['ליקרים ומרים', 'אפרול 700 מארז', 74, 3],
+  ['ליקרים ומרים', 'אפרול ליטר', 65, 4],
+  ['ליקרים ומרים', 'בייליס 700', 65, 12],
+  ['ליקרים ומרים', 'יגרמייסטר 200 מ"ל', 25, 57],
+  ['ליקרים ומרים', 'יגרמייסטר 700 מ"ל', 72, 58],
+  ['ליקרים ומרים', 'יגרמייסטר ליטר', 89, 59],
+  ['ליקרים ומרים', 'קמפרי ליטר', 75, 83],
+  ['ליקרים ומרים', 'שרידנס 500 מל', 57, 108],
+  ['ליקרים ומרים', 'ליקר פיג\'לינג 750', 65, 61],
+
+  ['ערק', 'ערק עלית 200 מ"ל', 17.5, 68],
+  ['ערק', 'ערק עלית 700 מ"ל', 60, 69],
+  ['ערק', 'ערק שליט 200 מ"ל', 15, 70],
+
+  ['ברנדי וכוהל', 'וולדוף ברנדי 200 מ"ל', 10, 51],
+  ['ברנדי וכוהל', 'כוהל 700 מ"ל', 60, 60],
+
+  ['בירה', 'באדוויזר פח 500 מ"ל', 145, 6],
+  ['בירה', 'בוואריה 8.6 אוריגינל', 162, 7],
+  ['בירה', 'בוואריה אקסטרים', 162, 8],
+  ['בירה', 'הולנדיה 12%', 162, 9],
+  ['בירה', 'בלאנק 330', 145, 13],
+  ['בירה', 'היינקן 330 מ"ל', 115, 44],
+  ['בירה', 'היינקן פח 500 מ"ל', 139, 45],
+  ['בירה', 'ויינשטפן 500 מל', 175, 53],
+  ['בירה', 'טובורג 330 מל', 110, 54],
+  ['בירה', 'טובורג פח מחוזק', 150, 55],
+  ['בירה', 'סטלה 330 מ"ל שישיות', 114, 64],
+  ['בירה', 'סטלה פח 500 מ"ל', 135, 65],
+  ['בירה', 'פאולנר 500 מל', 165, 71],
+  ['בירה', 'פאולנר פח 500 מל', 165, 72],
+  ['בירה', 'קוזל שחור פח', 145, 80],
+  ['בירה', 'קורונה 355 מ"ל חברה', 120, 81],
+  ['בירה', 'קסטיל רוז 330 מ"ל', 225, 84],
+  ['בירה', 'קסטיל רוז 750 מ"ל', 29, 85],
+  ['בירה', 'קסטיל 0.0% 330 מ"ל', 225, 86],
+  ['בירה', 'קסטיל טרופי 330 מ"ל', 225, 87],
+  ['בירה', 'קסטיל טריפל 330 מ"ל', 225, 88],
+  ['בירה', 'קסטיל רובוס 330 מ"ל', 225, 89],
+  ['בירה', 'קרלסברג 330 מ"ל שישיות', 125, 91],
+  ['בירה', 'קרלסברג פח שישיות', 130, 92],
+
+  ['קוקטיילים', 'בריזר אננס', 195, 24],
+  ['קוקטיילים', 'בריזר ליים', 195, 25],
+  ['קוקטיילים', 'בריזר לימון', 195, 26],
+  ['קוקטיילים', 'סמירנוף אייס', 195, 66],
+
+  ['משקאות אנרגיה', 'XL ח', 70, 5],
+  ['משקאות אנרגיה', 'רד בול', 100, 97],
+  ['משקאות אנרגיה', 'רד בול דיאט', 100, 96],
+  ['משקאות אנרגיה', 'רד בול אבטיח', 100, 93],
+  ['משקאות אנרגיה', 'רד בול אפרסק', 100, 94],
+  ['משקאות אנרגיה', 'רד בול משמש', 100, 95]
+];
+
+let state = { q: "", cat: "הכל" };
+
+function imgSrc(n) {
+  const id = String(n).padStart(3, "0");
+  const map = window.CATALOG_IMAGES;
+  return (map && map[id]) || "img/" + id + ".jpg";
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+}
+
+function render() {
+  const q = state.q.trim();
+  const cat = state.cat;
+
+  const groupsEl = document.getElementById('groups');
+  const chipsEl = document.getElementById('chips');
+  const emptyEl = document.getElementById('empty');
+
+  const chipCats = ["הכל"].concat(order);
+  chipsEl.innerHTML = chipCats.map((c) => {
+    const active = cat === c;
+    const label = c === "הכל" ? "הכל · " + items.length : c;
+    return `<button class="chip${active ? ' active' : ''}" data-cat="${escapeHtml(c)}">${escapeHtml(label)}</button>`;
+  }).join('');
+
+  let shown = 0;
+  let html = '';
+  order.forEach((name) => {
+    if (cat !== "הכל" && cat !== name) return;
+    const rows = items.filter((it) => it[0] === name && (!q || it[1].includes(q)));
+    if (!rows.length) return;
+    shown += rows.length;
+    html += `<section class="group">
+      <div class="group-head"><h2>${escapeHtml(name)}</h2><span class="group-count">${rows.length}</span></div>
+      <div class="grid">
+        ${rows.map((it) => `
+          <div class="card">
+            <div class="card-img-wrap"><img src="${imgSrc(it[3])}" alt="${escapeHtml(it[1])}" loading="lazy" /></div>
+            <div class="card-body">
+              <div class="card-name">${escapeHtml(it[1])}</div>
+              <div class="card-price"><span class="price-num">${it[2]}</span><span class="price-sym">₪</span></div>
+            </div>
+          </div>`).join('')}
+      </div>
+    </section>`;
+  });
+
+  groupsEl.innerHTML = html;
+  emptyEl.style.display = shown === 0 ? '' : 'none';
+  document.getElementById('count').textContent = shown + '/' + items.length;
+  document.getElementById('total').textContent = items.length;
+
+  chipsEl.querySelectorAll('.chip').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      state.cat = btn.dataset.cat;
+      render();
+    });
+  });
+}
+
+document.getElementById('search').addEventListener('input', (e) => {
+  state.q = e.target.value;
+  render();
+});
+
+render();
+</script>
+</body>
+</html>
